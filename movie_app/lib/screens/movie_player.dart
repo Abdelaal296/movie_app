@@ -20,7 +20,7 @@ class _MoviePlayerState extends State<MoviePlayer> {
   @override
   void initState() {
     super.initState();
-    videoPlayerController = VideoPlayerController.asset('assets/videos/Better.Call.Saul.mp4')
+    videoPlayerController = VideoPlayerController.asset('assets/videos/got.mp4')
       ..initialize().then((value) {
         setState(() {
         });
