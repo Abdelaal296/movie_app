@@ -37,7 +37,7 @@ class MovieScreen extends StatelessWidget {
             )),
           )),
           Positioned(
-            bottom: 150,
+            top: 420,
             width: MediaQuery.of(context).size.width,
             child: Padding(
               padding: const EdgeInsets.all(20.0),
