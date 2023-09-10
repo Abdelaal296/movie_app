@@ -1,15 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:movie_app/models/movie_model.dart';
+import 'package:movie_app/constants.dart';
 import 'package:movie_app/widgets/movie_list_item.dart';
-
+import '../models/service.dart';
 import 'movie_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
 
-  List<Movie> movies = Movie.movies;
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  List movies = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    ApiHelper.getMovies().then((value) {
+      setState(() {
+        ApiHelper.movies.addAll(value);
+        movies = ApiHelper.movies;
+        isLoading = false;
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +39,7 @@ class HomeScreen extends StatelessWidget {
             child: Container(
               height: 150,
               width: MediaQuery.of(context).size.width,
-              color: Color.fromARGB(255, 21, 76, 110),
+              color: const Color.fromARGB(255, 8, 35, 81),
               child: Center(
                   child: Text(
                 "Explore",
@@ -34,45 +50,58 @@ class HomeScreen extends StatelessWidget {
               )),
             )),
       ),
-      body: SingleChildScrollView(
-          child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            RichText(
-                text: TextSpan(
-                    style: Theme.of(context).textTheme.headline6,
-                    children: [
-                  TextSpan(
-                      text: "Featured ",
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline6!
-                          .copyWith(fontWeight: FontWeight.bold)),
-                  TextSpan(
-                      text: "Movies",
-                      style: TextStyle(color: Colors.grey[500])),
-                ])),
-            SizedBox(
-              height: 20.0,
-            ),
-            for (final movie in movies)
-              InkWell(
-                onTap: () {
-                  Navigator.push(context, 
-                  MaterialPageRoute(builder: (context)=> MovieScreen(movie: movie,)));
-                },
-                child: MovieListItem(
-                  imageUrl: movie.imagePath,
-                  name: movie.name,
-                  information:
-                      '${movie.year} | ${movie.category} | ${movie.duration.inHours}h | ${movie.duration.inMinutes.remainder(60)}m',
-                ),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+              color: Color.fromARGB(255, 8, 35, 81),
+            ))
+          : Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                      text: TextSpan(
+                          style: Theme.of(context).textTheme.headline6,
+                          children: [
+                        TextSpan(
+                            text: "Featured ",
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline6!
+                                .copyWith(fontWeight: FontWeight.bold)),
+                        TextSpan(
+                            text: "Movies",
+                            style: TextStyle(color: Colors.grey[500])),
+                      ])),
+                  const SizedBox(
+                    height: 20.0,
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: movies.length,
+                      itemBuilder: (context, index) => InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MovieScreen(
+                                        movie: movies[index],
+                                      )));
+                        },
+                        child: MovieListItem(
+                          imageUrl: (imgUrl + movies[index].posterPath),
+                          name: movies[index].title,
+                          information: movies[index].releaseDate,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
               ),
-          ],
-        ),
-      )),
+            ),
     );
   }
 }

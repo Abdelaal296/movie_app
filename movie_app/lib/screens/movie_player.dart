@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:movie_app/models/movie_model.dart';
 import 'package:chewie/chewie.dart';
 import 'package:video_player/video_player.dart';
 
+import '../models/movie_model.dart';
+
 class MoviePlayer extends StatefulWidget {
-  final Movie movie;
+  final MovieModel movie;
   const MoviePlayer({super.key, required this.movie});
 
   @override
@@ -22,8 +21,7 @@ class _MoviePlayerState extends State<MoviePlayer> {
     super.initState();
     videoPlayerController = VideoPlayerController.asset('assets/videos/got.mp4')
       ..initialize().then((value) {
-        setState(() {
-        });
+        setState(() {});
       });
 
     chewieController = ChewieController(
@@ -43,7 +41,10 @@ class _MoviePlayerState extends State<MoviePlayer> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: SafeArea(child: Chewie(controller: chewieController,)),
+      body: SafeArea(
+          child: Chewie(
+        controller: chewieController,
+      )),
     );
   }
 }
